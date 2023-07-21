@@ -5,6 +5,8 @@ function App() {
   //for todos
   const [task, setTask] = useState('')
   const [taskList, setTaskList] = useState([])
+  const [completed, setCompleted] = useState(false)
+  
 
   //for pomodoro
   const [minutes, setMinutes] = useState(24)
@@ -14,11 +16,35 @@ function App() {
 
   const handleClick = (event) => {
     event.preventDefault()
-    setTaskList((previousTasks)=> [...previousTasks, task])
+
+    if(task === ''){
+      return ''
+    }else{
+      setTaskList((previousTasks)=> [...previousTasks, task])
+
+    }
     setTask('')
     
   }
 
+  const deletTask = (event, taskIndex) => {
+    event.preventDefault()
+
+    setTaskList(prev => prev.filter((item, index) => index !==  taskIndex))
+
+  }
+
+  const completedTask = (event, taskIndex) => {
+    event.preventDefault()
+    // vairavel setCompleted(true) atualiza para todos
+    //mudar taskList para objeto
+    //task: 'task', completed: false
+    console.log('completed!')
+    
+  }
+
+
+//pomodoro
   function handleStartTimer() {
     if (!intervalId) {
       const id = setInterval(() => {
@@ -62,7 +88,16 @@ function App() {
 
         <ul>
           {taskList?.map((item, index) => (
-            <li key={index}>{item}</li>
+            <div >
+              {/* ajustar aqui depois do completedTask */}
+              <li 
+              contentEditable={completed ? false : true} 
+              key={index}>{completed ? `${item} TASK COMPLETED!` : item}</li>
+              <button key={index} onClick={(event)=>deletTask(event, index)}>X</button>
+              <button key={index} onClick={(event)=>completedTask(event, index)}>mark as completed</button>
+              
+            </div>
+            
           ))}
         </ul>
 
@@ -76,7 +111,7 @@ function App() {
           <h1>{minutes}:{seconds < 10 ? `0${seconds}` : seconds}</h1>
 
           <button onClick={handleStartTimer}>start</button>
-          <button>reset</button>
+          <button onClick={stopTimer}>reset</button>
         </div>
       </div>
     </>
