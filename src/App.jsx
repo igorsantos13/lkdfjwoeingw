@@ -7,9 +7,10 @@ function App() {
   const [taskList, setTaskList] = useState([])
 
   //for pomodoro
-  const [minutes, setMinutes] = useState(25)
-  const [seconds, setSeconds] = useState(11)
+  const [minutes, setMinutes] = useState(24)
+  const [seconds, setSeconds] = useState(59)
   const [intervalId, setIntervalId] = useState(null);
+  const [intervalIdMinute, setIntervalIdMinute] = useState(null);
 
   const handleClick = (event) => {
     event.preventDefault()
@@ -25,16 +26,28 @@ function App() {
       }, 1000);
       setIntervalId(id);
     }
+
+    if (!intervalIdMinute) {
+      const idMinute = setInterval(() => {
+        setMinutes((prevMinutes) => prevMinutes -1)
+      }, 60000);
+      setIntervalIdMinute(idMinute);
+    }
   }
 
   function stopTimer(){
     clearInterval(intervalId);
+    clearInterval(intervalIdMinute);
     setIntervalId(null);
+    setIntervalIdMinute(null);
   }
 
   useEffect(() => {
-    if (seconds === 0) {
-      stopTimer();
+    if (seconds < 0) {
+      setSeconds(59); 
+    }
+    if(minutes < 0){
+      setMinutes(24)
     }
   }, [seconds]);
   
@@ -60,7 +73,7 @@ function App() {
         <h4>pomodoro</h4>
 
         <div className="timer">
-          <h1>00:{seconds < 10 ? `0${seconds}`: seconds}</h1>
+          <h1>{minutes}:{seconds < 10 ? `0${seconds}` : seconds}</h1>
 
           <button onClick={handleStartTimer}>start</button>
           <button>reset</button>
