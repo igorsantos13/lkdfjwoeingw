@@ -17,15 +17,16 @@ function App() {
   const handleClick = (event) => {
     event.preventDefault()
 
-    if(task === ''){
-      return ''
-    }else{
-      setTaskList((previousTasks)=> [...previousTasks, task])
-
-    }
-    setTask('')
     
-  }
+    if(task === ''){
+        return ''
+      }else{
+          setTaskList(previousTask => [...previousTask, {task: task, completed: false}] )
+        
+        }
+        setTask('')
+        
+      }
 
   const deletTask = (event, taskIndex) => {
     event.preventDefault()
@@ -36,10 +37,17 @@ function App() {
 
   const completedTask = (event, taskIndex) => {
     event.preventDefault()
-    // vairavel setCompleted(true) atualiza para todos
-    //mudar taskList para objeto
-    //task: 'task', completed: false
-    console.log('completed!')
+
+    //revisar esse trecho para estudos - vlw chatGPT!
+    setTaskList(prevTaskList => {
+      return prevTaskList.map((item, index) => {
+        if(taskIndex == index){
+          return {...item, completed: !item.completed}
+        }else{
+          return item
+        }
+      })
+    })
     
   }
 
@@ -87,14 +95,13 @@ function App() {
         <button onClick={(event)=>handleClick(event)}>add task</button>
 
         <ul>
-          {taskList?.map((item, index) => (
+        {taskList?.map((item, index) => (
             <div >
-              {/* ajustar aqui depois do completedTask */}
-              <li 
-              contentEditable={completed ? false : true} 
-              key={index}>{completed ? `${item} TASK COMPLETED!` : item}</li>
+              <li
+              key={index}>{item.completed ? `${item.task} TASK COMPLETED!` : item.task}</li>
+
               <button key={index} onClick={(event)=>deletTask(event, index)}>X</button>
-              <button key={index} onClick={(event)=>completedTask(event, index)}>mark as completed</button>
+              <button key={index} onClick={(event)=>completedTask(event, index)}>{item.completed ? 'Undo' : 'Mark as completed'}</button>
               
             </div>
             
