@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 
+
 function App() {
   //for todos
   const [task, setTask] = useState('')
-  const [taskList, setTaskList] = useState([])
-  const [completed, setCompleted] = useState(false)
-  
+  const [taskList, setTaskList] = useState([]) 
+  const [localTasks, setLocalTasks]  = useState([])
 
   //for pomodoro
   const [minutes, setMinutes] = useState(24)
@@ -14,20 +14,37 @@ function App() {
   const [intervalId, setIntervalId] = useState(null);
   const [intervalIdMinute, setIntervalIdMinute] = useState(null);
 
+  useEffect(() => {
+    // Recuperando os dados do localStorage ao montar o componente
+    const savedTasks = localStorage.getItem('task')
+
+   if(savedTasks){
+    try{
+      const parsedTasks = JSON.parse(savedTasks)
+      setLocalTasks(parsedTasks)
+    }catch(err){
+      console.log('Erro ao analisar os dados do localStorage', err)
+    }
+    setLocalTasks(savedTasks)
+   }
+  }, []);
+
   const handleClick = (event) => {
     event.preventDefault()
-
     
     if(task === ''){
         return ''
       }else{
-          setTaskList(previousTask => [...previousTask, {task: task, completed: false}] )
+        localStorage.setItem('task', JSON.stringify(task));
+        
+        setTaskList(previousTask => [...previousTask, {task: task, completed: false}] )
         
         }
         setTask('')
         
       }
 
+      
   const deletTask = (event, taskIndex) => {
     event.preventDefault()
 
@@ -76,6 +93,7 @@ function App() {
     setIntervalIdMinute(null);
   }
 
+  //USE EFFECTS!
   useEffect(() => {
     if (seconds < 0) {
       setSeconds(59); 
@@ -107,6 +125,17 @@ function App() {
             
           ))}
         </ul>
+
+        <h1>teste</h1>
+        <div>
+          {/* <ul>
+            {localTasks?.map((item, index) => (
+              <div>
+                <li key={index}>{item.task}</li>
+              </div>
+            ))}
+          </ul> */}
+        </div>
 
       </form>
     </div>
