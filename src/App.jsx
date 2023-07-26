@@ -5,7 +5,6 @@ import './App.css'
 function App() {
   //for todos
   const [task, setTask] = useState('')
-  const [taskList, setTaskList] = useState([]) 
   const [localTasks, setLocalTasks]  = useState([])
 
   //for pomodoro
@@ -25,9 +24,10 @@ function App() {
     }catch(err){
       console.log('Erro ao analisar os dados do localStorage', err)
     }
-    setLocalTasks(savedTasks)
+    
    }
   }, []);
+  // console.log(taskList)
 
   const handleClick = (event) => {
     event.preventDefault()
@@ -35,28 +35,62 @@ function App() {
     if(task === ''){
         return ''
       }else{
-        localStorage.setItem('task', JSON.stringify(task));
         
-        setTaskList(previousTask => [...previousTask, {task: task, completed: false}] )
+        setLocalTasks(previousTask => {
+          const allTasks = [...previousTask, {task: task, completed: false}]
+          const stringifiedTasks = JSON.stringify(allTasks)
+          localStorage.setItem('task', stringifiedTasks);
+
+          //recuperar os dados a cada novo item adicionado?!
+          const savedTasks = localStorage.getItem('task')
+
+          if(savedTasks){
+            try{
+              const parsedTasks = JSON.parse(savedTasks)
+              setLocalTasks(parsedTasks)
+            }catch(err){
+              console.log('Erro ao analisar os dados do localStorage', err)
+            }
+            
+          }
+          
+          return allTasks
+
+        } )
         
         }
         setTask('')
         
       }
 
-      
-  const deletTask = (event, taskIndex) => {
+  //revisar esse trecho para estudos
+  const deletTask = (event, index) => {
     event.preventDefault()
 
-    setTaskList(prev => prev.filter((item, index) => index !==  taskIndex))
+    const savedTasks = JSON.parse(localStorage.getItem('task'));
+
+    if (savedTasks && index >= 0 && index < savedTasks.length) {
+      // Remover o item do array pelo índice
+      savedTasks.splice(index, 1);
+  
+      // Salvar o array atualizado de volta no localStorage
+      localStorage.setItem('task', JSON.stringify(savedTasks));
+  
+      // Atualizar o estado local com o array atualizado
+      setLocalTasks(savedTasks);
+    }
+
+    //procurar no array o mesmo index do clique
+    // setLocalTasks(prev => prev.filter((item, index) => index !== taskIndex))
+
+    
 
   }
-
   const completedTask = (event, taskIndex) => {
     event.preventDefault()
 
-    //revisar esse trecho para estudos - vlw chatGPT!
-    setTaskList(prevTaskList => {
+    //revisar esse trecho para estudos
+    setLocalTasks(prevTaskList => {
       return prevTaskList.map((item, index) => {
         if(taskIndex == index){
           return {...item, completed: !item.completed}
@@ -113,7 +147,7 @@ function App() {
         <button onClick={(event)=>handleClick(event)}>add task</button>
 
         <ul>
-        {taskList?.map((item, index) => (
+        {localTasks?.map((item, index) => (
             <div >
               <li
               key={index}>{item.completed ? `${item.task} TASK COMPLETED!` : item.task}</li>
@@ -128,13 +162,13 @@ function App() {
 
         <h1>teste</h1>
         <div>
-          {/* <ul>
-            {localTasks?.map((item, index) => (
-              <div>
-                <li key={index}>{item.task}</li>
-              </div>
-            ))}
-          </ul> */}
+          <ul>
+            {/* {localTasks.map((item, index) => (
+              <li key={index}>
+                {item.task}
+              </li>
+            ))} */}
+          </ul>
         </div>
 
       </form>
