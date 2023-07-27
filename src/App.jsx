@@ -27,7 +27,6 @@ function App() {
     
    }
   }, []);
-  // console.log(taskList)
 
   const handleClick = (event) => {
     event.preventDefault()
@@ -41,7 +40,6 @@ function App() {
           const stringifiedTasks = JSON.stringify(allTasks)
           localStorage.setItem('task', stringifiedTasks);
 
-          //recuperar os dados a cada novo item adicionado?!
           const savedTasks = localStorage.getItem('task')
 
           if(savedTasks){
@@ -65,8 +63,10 @@ function App() {
 
   //revisar esse trecho para estudos
   const deletTask = (event, index) => {
+    // Evita o comportamento de atualizar a página
     event.preventDefault()
 
+    // Recupera os dados do localStorage
     const savedTasks = JSON.parse(localStorage.getItem('task'));
 
     if (savedTasks && index >= 0 && index < savedTasks.length) {
@@ -80,30 +80,31 @@ function App() {
       setLocalTasks(savedTasks);
     }
 
-    //procurar no array o mesmo index do clique
-    // setLocalTasks(prev => prev.filter((item, index) => index !== taskIndex))
-
-    
 
   }
-  const completedTask = (event, taskIndex) => {
-    event.preventDefault()
 
-    //revisar esse trecho para estudos
-    setLocalTasks(prevTaskList => {
-      return prevTaskList.map((item, index) => {
-        if(taskIndex == index){
-          return {...item, completed: !item.completed}
-        }else{
-          return item
-        }
-      })
-    })
-    
+  const completedTask = (event, index) => {
+    event.preventDefault();
+
+  const savedTasks = JSON.parse(localStorage.getItem('task'));
+
+  // Crie uma cópia do array de tarefas
+  const updatedTasks = [...savedTasks];
+
+  // Atualize a propriedade "completed" no objeto desejado
+  updatedTasks[index].completed = !updatedTasks[index].completed;
+
+  // Salve o array de tarefas atualizado no localStorage
+  localStorage.setItem('task', JSON.stringify(updatedTasks));
+
+  // Atualize o estado local com o array de tarefas atualizado
+  setLocalTasks(updatedTasks);
+
+            
   }
-
-
-//pomodoro
+          
+          
+          //pomodoro
   function handleStartTimer() {
     if (!intervalId) {
       const id = setInterval(() => {
@@ -111,23 +112,23 @@ function App() {
       }, 1000);
       setIntervalId(id);
     }
-
+    
     if (!intervalIdMinute) {
       const idMinute = setInterval(() => {
-        setMinutes((prevMinutes) => prevMinutes -1)
-      }, 60000);
-      setIntervalIdMinute(idMinute);
-    }
+  setMinutes((prevMinutes) => prevMinutes -1)
+  }, 60000);
+  setIntervalIdMinute(idMinute);
   }
-
+  }
+  
   function stopTimer(){
     clearInterval(intervalId);
     clearInterval(intervalIdMinute);
     setIntervalId(null);
     setIntervalIdMinute(null);
   }
-
-  //USE EFFECTS!
+  
+  //USE EFFECTS
   useEffect(() => {
     if (seconds < 0) {
       setSeconds(59); 
@@ -137,6 +138,7 @@ function App() {
     }
   }, [seconds]);
   
+  console.log(localTasks)
   return (
     <>
 
@@ -148,7 +150,7 @@ function App() {
 
         <ul>
         {localTasks?.map((item, index) => (
-            <div >
+          <div >
               <li
               key={index}>{item.completed ? `${item.task} TASK COMPLETED!` : item.task}</li>
 
@@ -157,19 +159,8 @@ function App() {
               
             </div>
             
-          ))}
+            ))}
         </ul>
-
-        <h1>teste</h1>
-        <div>
-          <ul>
-            {/* {localTasks.map((item, index) => (
-              <li key={index}>
-                {item.task}
-              </li>
-            ))} */}
-          </ul>
-        </div>
 
       </form>
     </div>
