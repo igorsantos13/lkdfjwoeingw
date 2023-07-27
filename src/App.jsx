@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 
+
 function App() {
   //for todos
   const [task, setTask] = useState('')
-  const [taskList, setTaskList] = useState([])
-  const [completed, setCompleted] = useState(false)
-  
+  const [localTasks, setLocalTasks]  = useState([])
 
   //for pomodoro
   const [minutes, setMinutes] = useState(24)
@@ -14,45 +13,98 @@ function App() {
   const [intervalId, setIntervalId] = useState(null);
   const [intervalIdMinute, setIntervalIdMinute] = useState(null);
 
+  useEffect(() => {
+    // Recuperando os dados do localStorage ao montar o componente
+    const savedTasks = localStorage.getItem('task')
+
+   if(savedTasks){
+    try{
+      const parsedTasks = JSON.parse(savedTasks)
+      setLocalTasks(parsedTasks)
+    }catch(err){
+      console.log('Erro ao analisar os dados do localStorage', err)
+    }
+    
+   }
+  }, []);
+
   const handleClick = (event) => {
     event.preventDefault()
-
     
     if(task === ''){
         return ''
       }else{
-          setTaskList(previousTask => [...previousTask, {task: task, completed: false}] )
+        
+        setLocalTasks(previousTask => {
+          const allTasks = [...previousTask, {task: task, completed: false}]
+          const stringifiedTasks = JSON.stringify(allTasks)
+          localStorage.setItem('task', stringifiedTasks);
+
+          const savedTasks = localStorage.getItem('task')
+
+          if(savedTasks){
+            try{
+              const parsedTasks = JSON.parse(savedTasks)
+              setLocalTasks(parsedTasks)
+            }catch(err){
+              console.log('Erro ao analisar os dados do localStorage', err)
+            }
+            
+          }
+          
+          return allTasks
+
+        } )
         
         }
         setTask('')
         
       }
 
-  const deletTask = (event, taskIndex) => {
+  //revisar esse trecho para estudos
+  const deletTask = (event, index) => {
+    // Evita o comportamento de atualizar a página
     event.preventDefault()
 
-    setTaskList(prev => prev.filter((item, index) => index !==  taskIndex))
+    // Recupera os dados do localStorage
+    const savedTasks = JSON.parse(localStorage.getItem('task'));
+
+    if (savedTasks && index >= 0 && index < savedTasks.length) {
+      // Remover o item do array pelo índice
+      savedTasks.splice(index, 1);
+  
+      // Salvar o array atualizado de volta no localStorage
+      localStorage.setItem('task', JSON.stringify(savedTasks));
+  
+      // Atualizar o estado local com o array atualizado
+      setLocalTasks(savedTasks);
+    }
+
 
   }
 
-  const completedTask = (event, taskIndex) => {
-    event.preventDefault()
+  const completedTask = (event, index) => {
+    event.preventDefault();
 
-    //revisar esse trecho para estudos - vlw chatGPT!
-    setTaskList(prevTaskList => {
-      return prevTaskList.map((item, index) => {
-        if(taskIndex == index){
-          return {...item, completed: !item.completed}
-        }else{
-          return item
-        }
-      })
-    })
-    
+  const savedTasks = JSON.parse(localStorage.getItem('task'));
+
+  // Crie uma cópia do array de tarefas
+  const updatedTasks = [...savedTasks];
+
+  // Atualize a propriedade "completed" no objeto desejado
+  updatedTasks[index].completed = !updatedTasks[index].completed;
+
+  // Salve o array de tarefas atualizado no localStorage
+  localStorage.setItem('task', JSON.stringify(updatedTasks));
+
+  // Atualize o estado local com o array de tarefas atualizado
+  setLocalTasks(updatedTasks);
+
+            
   }
-
-
-//pomodoro
+          
+          
+          //pomodoro
   function handleStartTimer() {
     if (!intervalId) {
       const id = setInterval(() => {
@@ -60,22 +112,23 @@ function App() {
       }, 1000);
       setIntervalId(id);
     }
-
+    
     if (!intervalIdMinute) {
       const idMinute = setInterval(() => {
-        setMinutes((prevMinutes) => prevMinutes -1)
-      }, 60000);
-      setIntervalIdMinute(idMinute);
-    }
+  setMinutes((prevMinutes) => prevMinutes -1)
+  }, 60000);
+  setIntervalIdMinute(idMinute);
   }
-
+  }
+  
   function stopTimer(){
     clearInterval(intervalId);
     clearInterval(intervalIdMinute);
     setIntervalId(null);
     setIntervalIdMinute(null);
   }
-
+  
+  //USE EFFECTS
   useEffect(() => {
     if (seconds < 0) {
       setSeconds(59); 
@@ -85,6 +138,7 @@ function App() {
     }
   }, [seconds]);
   
+  console.log(localTasks)
   return (
     <>
 
@@ -95,8 +149,8 @@ function App() {
         <button onClick={(event)=>handleClick(event)}>add task</button>
 
         <ul>
-        {taskList?.map((item, index) => (
-            <div >
+        {localTasks?.map((item, index) => (
+          <div >
               <li
               key={index}>{item.completed ? `${item.task} TASK COMPLETED!` : item.task}</li>
 
@@ -105,7 +159,7 @@ function App() {
               
             </div>
             
-          ))}
+            ))}
         </ul>
 
       </form>
