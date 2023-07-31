@@ -6,9 +6,9 @@ function Timer() {
     const [seconds, setSeconds] = useState(0)
     const [intervalId, setIntervalId] = useState(null);
     const [intervalIdMinute, setIntervalIdMinute] = useState(null);
+    const [firstMinuteDecremented, setFirstMinuteDecremented] = useState(false);
   
     function handleStartTimer() {
-        setTimeout(()=>{setMinutes(prev => prev-1)}, 1000);
 
         if (!intervalId) {
           const id = setInterval(() => {
@@ -16,9 +16,14 @@ function Timer() {
           }, 1000);
           setIntervalId(id);
         }
+
+        if (!firstMinuteDecremented) {
+          // Decrementa um minuto no início, apenas uma vez
+          setFirstMinuteDecremented(true);
+          setTimeout(()=>{setMinutes(prev => prev-1)}, 1000);
+        }      
         
-        
-        if (!intervalIdMinute) {       
+        if (!intervalIdMinute) {
             const idMinute = setInterval(() => {
             setMinutes((prevMinutes) => prevMinutes -1)
       }, 60000);
@@ -30,28 +35,28 @@ function Timer() {
         stopTimer(); 
         setMinutes(25); 
         setSeconds(0); 
-
+        setFirstMinuteDecremented(false);
       }
 
       function handleShortBreak(){
         stopTimer(); 
-        setMinutes(5); 
+        setMinutes(1); 
         setSeconds(0);
-
+        setFirstMinuteDecremented(false);
       }
 
       function handleLongBreak(){
         stopTimer(); 
         setMinutes(10); 
         setSeconds(0);
-       
+        setFirstMinuteDecremented(false);       
       }
       
       function stopTimer(){
         clearInterval(intervalId);
         clearInterval(intervalIdMinute);
         setIntervalId(null);
-        setIntervalIdMinute(null);
+        setIntervalIdMinute(null);        
       }
       
       //USE EFFECTS
@@ -61,8 +66,6 @@ function Timer() {
         }
         if(minutes < 0){
             stopTimer()
-            
-            
         }
       }, [seconds]);
   return (
