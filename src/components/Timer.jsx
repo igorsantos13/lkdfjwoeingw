@@ -1,5 +1,8 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
+import betaImage from '../assets/beta2.png'
+import './timer.css'
+
 
 function Timer() {
     const [minutes, setMinutes] = useState(25)
@@ -40,7 +43,7 @@ function Timer() {
 
       function handleShortBreak(){
         stopTimer(); 
-        setMinutes(1); 
+        setMinutes(5); 
         setSeconds(0);
         setFirstMinuteDecremented(false);
       }
@@ -69,15 +72,19 @@ function Timer() {
         }
       }, [seconds]);
   return (
-    <div>
-        <h4>pomodoro</h4>
+    <div className='timer-container'>
+        <img src={betaImage} alt="This project is in beta."/>
+        <h4>Pomodoro</h4>
+        <div className='buttons'>
         <button onClick={handleWorkTime}>Work Time!</button>
         <button onClick={handleShortBreak}>Short Break</button>
         <button onClick={handleLongBreak}>Long Break</button>
 
+        </div>
+
         <div className="timer">
 
-          <h1>{minutes < 0 ? 
+          <div className='timer-labels'>{minutes < 0 ? 
           (<>
           <h1>Pomodoro Ended!</h1>
           <p>Choose <b>Work Time</b> for more 25 minutes</p>
@@ -85,11 +92,14 @@ function Timer() {
           </>
           )
           : (<h1>{minutes < 10 ? `0${minutes}` : minutes}:{seconds < 10 ? `0${seconds}` : seconds}</h1>)}
-          </h1>
+          </div>
             
 
-          <button onClick={handleStartTimer}>Start</button>
-          <button onClick={stopTimer}>Pause</button>
+            <div className='start-pause-button'>
+
+            <button onClick={handleStartTimer}>Start</button>
+            <button onClick={stopTimer}>Pause</button>
+            </div>
         </div>
       </div>
   )

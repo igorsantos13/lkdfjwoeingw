@@ -1,5 +1,7 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
+import './task.css'
+import { FcCheckmark, FcCancel } from 'react-icons/fc/';
 
 
 function Task() {
@@ -55,7 +57,7 @@ function Task() {
           }
     
       //revisar esse trecho para estudos
-      const deletTask = (event, index) => {
+      const deleteTask = (event, index) => {
         // Evita o comportamento de atualizar a página
         event.preventDefault()
     
@@ -96,27 +98,37 @@ function Task() {
                 
       }
   return (
-    <div>
-      <h1>TODO</h1>
+    <div className='todo-container'>
+      <h1>Todo</h1>
       <form action="">
         <input type="text" onChange={(e)=>setTask(e.target.value)} value={task}/>
         <button onClick={(event)=>handleClick(event)}>add task</button>
+      </form>
 
         <ul>
         {localTasks?.map((item, index) => (
-          <div >
+          <div className='show-tasks'>
               <li
               key={index}>{item.completed ? `${item.task} TASK COMPLETED!` : item.task}</li>
 
-              <button key={index} onClick={(event)=>deletTask(event, index)}>X</button>
-              <button key={index} onClick={(event)=>completedTask(event, index)}>{item.completed ? 'Undo' : 'Mark as completed'}</button>
+
+          <div className='close-check-button'>
+              <FcCancel className='button' key={index} onClick={(event)=>deleteTask(event, index)}></FcCancel>
+              {/* {item.completed ? 'Undo' : `${<AiFillCheckSquare/>}`} */}
               
-            </div>
+              <FcCheckmark className='button' key={index} onClick={(event)=>completedTask(event, index)}></FcCheckmark>
+
+          </div>
+              
+
+              
+
+              
+          </div>
             
             ))}
         </ul>
 
-      </form>
     </div>
   )
 }
