@@ -1,0 +1,60 @@
+.todo-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+form{
+  display: flex;
+  width: 320px ;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  /* border: 1px solid red; */
+}
+
+input{
+  color: gold;
+  width: 100%;
+  font-size: 16px;
+  margin-right: 2rem;
+}
+
+form button{
+  width: 200px;
+}
+
+
+ul{
+  list-style: none;
+}
+
+li{
+  font-size: 1.5rem;
+  margin-right: 4rem;
+}
+
+.show-tasks{
+  width: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* border: 1px solid red; */
+}
+
+.close-check-button{
+  display: flex;
+  width: 150px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  /* border: 5px solid blue; */
+  
+}
+
+.button{
+  font-size: 32px;
+  line-height: 1.5rem;
+  cursor: pointer;
+}
